@@ -17,7 +17,7 @@ datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
 stand = tag[0][:6]+'20'+tag[0][6:]
 
-rki_raw = pd.read_excel(requests.get(url).content, 1)[2:] # das zweite Arbeitsblatt
+rki_raw = pd.read_excel(requests.get(url).content, 1)[2:]  # das zweite Arbeitsblatt
 rki_raw = rki_raw.iloc[list(range(17)), [1, 3, 6, 7]]
 rki_raw.index = list(range(17))
 rki_raw.columns = ['Bundesland', 'Erst_Impfungen_kum', 'Differenz_zum_Vortag', 'Impfquote_%']
