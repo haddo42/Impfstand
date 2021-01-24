@@ -12,9 +12,10 @@ import requests
 url = 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/' \
       'Daten/Impfquotenmonitoring.xlsx;' \
       'jsessionid=0FAB8623D95E5DF62147A144E1D768D9.internet081?__blob=publicationFile'
+
 datum = pd.read_excel(requests.get(url).content, 0)
-tag = re.search(r'\d\d\.\d\d\.\d\d', datum['Erläuterung'].iloc[1])[0]
-stand = tag[:6]+'20'+tag[6:]
+tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
+stand = tag[0][:6]+'20'+tag[0][6:]
 
 rki_raw = pd.read_excel(requests.get(url).content, 1)[2:] # das zweite Arbeitsblatt
 rki_raw = rki_raw.iloc[list(range(17)), [1, 3, 6, 7]]
