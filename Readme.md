@@ -6,4 +6,4 @@ Zunächst übernahm ich einfach "blind" die Angaben aus meinem [Einsteigerbeispi
 Der mit der Fehlermeldung verbundene Hinweis, die Logdatei zu befragen, lautete in meinem Fall 
 - `heroku logs -a=impfstand --tail`
 
-und erbrachte den Hinweis, dass der Pythonmodul **`xlrd`** nicht gefunden wurde. In der lokalen Lösung spielt der Modul explizit keine Rolle. Nach seiner Aufnahme in `requirements.txt` lief die App dann wie erwartet.
+und erbrachte den Hinweis, dass der Pythonmodul **`xlrd`** nicht gefunden wurde. In der lokalen Lösung spielt der Modul explizit keine Rolle. Offenbar wird er aber von `Pandas` beim Laden eines DataFrames mit einer aus dem Web direkt übernommenen Datei vom Typ `xlsx` benötigt. Nach seiner Aufnahme in `requirements.txt` lief die App dann wie erwartet.
