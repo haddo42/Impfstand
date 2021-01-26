@@ -53,8 +53,7 @@ figure_tag = go.Figure(
         x=rki.index,
         y=rki["Differenz_zum_Vortag"].astype(int) + rki['Zweit_Differenz_zum_Vortag'],
         width=barbreite
-    ),
-    ])
+    )])
 gesamt_tag = f'{bund.iloc[0][2] + bund.iloc[0][5]:,}'.replace(',', '.')
 figure_tag.update_layout(
     title_text=f"Impfungen gesamt (Länder gesamt {gesamt_tag})"
@@ -66,8 +65,7 @@ figure_kum = go.Figure(
         x=rki.index,
         y=rki["Gesamt"].astype(int),
         width=barbreite
-    )
-    ])
+    )])
 gesamt_kum = f'{int(bund.iloc[0][1] + bund.iloc[0][4]):,}'.replace(',', '.')
 figure_kum.update_layout(
     title_text=f"Impfungen gesamt kumulativ (Länder gesamt {gesamt_kum})"
@@ -79,8 +77,7 @@ figure_proz = go.Figure(
         x=rki_sort.index,
         y=[f'{i:.2f}' for i in rki_sort['Impfquote_%']],
         width=barbreite
-    )
-)
+    ))
 gesamt_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
 figure_proz.update_layout(
     title_text=f"Erstimpfungen prozentual zur Einwohnerzahl (Länder gesamt {gesamt_proz})"
