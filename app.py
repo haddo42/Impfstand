@@ -57,7 +57,7 @@ figure_tag = go.Figure(
     ])
 gesamt_tag = f'{bund.iloc[0][2] + bund.iloc[0][5]:,}'.replace(',', '.')
 figure_tag.update_layout(
-    title_text=f"Impfungen am {stand} (Länder gesamt {gesamt_tag})"
+    title_text=f"Impfungen gesamt (Länder gesamt {gesamt_tag})"
 )
 
 # Impfungen kumulativ bis zum Meldetag
@@ -70,7 +70,7 @@ figure_kum = go.Figure(
     ])
 gesamt_kum = f'{int(bund.iloc[0][1] + bund.iloc[0][4]):,}'.replace(',', '.')
 figure_kum.update_layout(
-    title_text=f"Impfungen gesamt kumulativ bis zum {stand} (Länder gesamt {gesamt_kum})"
+    title_text=f"Impfungen gesamt kumulativ (Länder gesamt {gesamt_kum})"
 )
 
 # Impfungen Bevölkerung in % sortiert
@@ -83,7 +83,7 @@ figure_proz = go.Figure(
 )
 gesamt_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
 figure_proz.update_layout(
-    title_text=f"Quote Erstimpfungen prozentual zur Einwohnerzahl Stand {stand} (Länder gesamt {gesamt_proz})"
+    title_text=f"Erstimpfungen prozentual zur Einwohnerzahl (Länder gesamt {gesamt_proz})"
 )
 
 # Zeitlicher Verlauf der Impfungen
@@ -126,6 +126,9 @@ app.layout = \
             html.H1(
                 children="Covid-19 Impfungen in Deutschland",
                 className="header-title"),
+            html.H3(
+                children=f"Stand vom {stand}",
+                className="header-subtitle"),
             html.Div(
                 children=[
                     html.Span(

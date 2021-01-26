@@ -8,8 +8,14 @@ body {
     color: #3C69E7;
     text-align: center;
 }
+.header-subtitle {
+    font-size: 24px;
+    color: #3C69E7;
+    text-align: center;
+}
 .header-datasource {
     text-align: center;
+    font-size: 16px;
 }
 .wrapper {
     margin-right: auto;
