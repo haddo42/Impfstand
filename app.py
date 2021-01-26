@@ -43,6 +43,8 @@ for i in rki_zr[:-1].Gesamt:
 kum.append(s)
 rki_zr['Gesamt_kum'] = kum
 
+barbreite = [0.6]*16
+
 """ die Grafiken definieren
 """
 # Impfungen am Meldetag
@@ -50,6 +52,7 @@ figure_tag = go.Figure(
     [go.Bar(
         x=rki.index,
         y=rki["Differenz_zum_Vortag"].astype(int) + rki['Zweit_Differenz_zum_Vortag'],
+        width=barbreite
     ),
     ])
 gesamt_tag = f'{bund.iloc[0][2] + bund.iloc[0][5]:,}'.replace(',', '.')
@@ -61,7 +64,8 @@ figure_tag.update_layout(
 figure_kum = go.Figure(
     [go.Bar(
         x=rki.index,
-        y=rki["Gesamt"].astype(int)
+        y=rki["Gesamt"].astype(int),
+        width=barbreite
     )
     ])
 gesamt_kum = f'{int(bund.iloc[0][1] + bund.iloc[0][4]):,}'.replace(',', '.')
@@ -73,7 +77,8 @@ figure_kum.update_layout(
 figure_proz = go.Figure(
     go.Bar(
         x=rki_sort.index,
-        y=[f'{i:.2f}' for i in rki_sort['Impfquote_%']]
+        y=[f'{i:.2f}' for i in rki_sort['Impfquote_%']],
+        width=barbreite
     )
 )
 gesamt_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
@@ -86,6 +91,7 @@ fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
     go.Scatter(x=rki_zr[:-1].Datum,
                y=rki_zr[:-1]['Gesamt_kum'],
+               mode="lines+markers",
                name="Erst- und Zweitimpfung kumulativ"),
     secondary_y=True)
 fig.add_trace(
@@ -104,8 +110,10 @@ fig.add_trace(
                name="Zweitimpfung"),
     secondary_y=False)
 fig.update_layout(
-    title_text="Zeitlicher Verlauf der täglichen Impfungen (Länder gesamt)"
-)
+    title_text="Zeitlicher Verlauf der täglichen Impfungen (Länder gesamt)",
+    legend=dict(yanchor="top", y=0.99,
+                xanchor="left", x=0.01)
+    )
 
 """ die App anlegen und gestalten
 """

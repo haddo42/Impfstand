@@ -20,6 +20,8 @@ body {
     margin-top: 32px;
 }
 .card {
+    margin: auto;
+    width: 860px;
     margin-bottom: 24px;
     box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
 }
