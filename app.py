@@ -129,27 +129,19 @@ app.layout = \
             html.Div(
                 children=[
                     html.Div(
-                        children=dcc.Graph(
-                            figure=figure_tag,
-                        ),
+                        children=dcc.Graph(figure=figure_tag),
                         className="card"
                     ),
                     html.Div(
-                        children=dcc.Graph(
-                            figure=figure_kum
-                        ),
+                        children=dcc.Graph(figure=figure_kum),
                         className="card"
                     ),
                     html.Div(
-                        children=dcc.Graph(
-                            figure=figure_proz
-                        ),
+                        children=dcc.Graph(figure=figure_proz),
                         className="card"
                     ),
                     html.Div(
-                        children=dcc.Graph(
-                            figure=fig
-                        ),
+                        children=dcc.Graph(figure=fig),
                         className="card"
                     )
                 ],
