@@ -16,9 +16,9 @@ url = 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/' \
 
 datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
-stand = tag[0][:6]+'20'+tag[0][6:]
+stand = tag[0][:6] + '20' + tag[0][6:]
 
-rki_raw = pd.read_excel(requests.get(url).content, 1)[2:] # das 2. Arbeitsblatt, ab 3. Zeile
+rki_raw = pd.read_excel(requests.get(url).content, 1)[2:]  # das 2. Arbeitsblatt, ab 3. Zeile
 rki_raw = rki_raw.iloc[list(range(17)), [1, 3, 6, 7, 8, 9]]
 rki_raw.index = list(range(17))
 rki_raw.columns = ['Bundesland', 'Erst_Impfungen_kum', 'Differenz_zum_Vortag',
@@ -33,7 +33,7 @@ rki_sort = rki.sort_values("Impfquote_%", ascending=False)
 rki_zr = pd.read_excel(requests.get(url).content, 3)
 rki_zr.drop(rki_zr[-2:-1].index, inplace=True)
 rki_zr.columns = ['Datum', 'Erstimpfung', 'Zweitimpfung', 'Gesamt']
-rki_zr = rki_zr[((rki_zr.Gesamt != 0))]
+rki_zr = rki_zr[(rki_zr.Gesamt != 0)]
 # kumulative Werte errechnen
 kum = []
 s = 0
@@ -43,7 +43,6 @@ for i in rki_zr[:-1].Gesamt:
 kum.append(s)
 rki_zr['Gesamt_kum'] = kum
 
-
 """ die Grafiken definieren
 """
 # Impfungen am Meldetag
@@ -51,39 +50,39 @@ figure_tag = go.Figure(
     [go.Bar(
         x=rki.index,
         y=rki["Differenz_zum_Vortag"].astype(int) + rki['Zweit_Differenz_zum_Vortag'],
-        ),
-     ])
-gesamt_tag = f'{bund.iloc[0][2]+bund.iloc[0][5]:,}'.replace(',', '.')
+    ),
+    ])
+gesamt_tag = f'{bund.iloc[0][2] + bund.iloc[0][5]:,}'.replace(',', '.')
 figure_tag.update_layout(
     title_text=f"Impfungen am {stand} (Länder gesamt {gesamt_tag})"
-    )
+)
 
 # Impfungen kumulativ bis zum Meldetag
 figure_kum = go.Figure(
     [go.Bar(
         x=rki.index,
         y=rki["Gesamt"].astype(int)
-        )
-     ])
-gesamt_kum = f'{int(bund.iloc[0][1]+bund.iloc[0][4]):,}'.replace(',', '.')
+    )
+    ])
+gesamt_kum = f'{int(bund.iloc[0][1] + bund.iloc[0][4]):,}'.replace(',', '.')
 figure_kum.update_layout(
     title_text=f"Impfungen gesamt kumulativ bis zum {stand} (Länder gesamt {gesamt_kum})"
-    )
+)
 
 # Impfungen Bevölkerung in % sortiert
 figure_proz = go.Figure(
     go.Bar(
         x=rki_sort.index,
         y=[f'{i:.2f}' for i in rki_sort['Impfquote_%']]
-        )
     )
+)
 gesamt_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
 figure_proz.update_layout(
     title_text=f"Quote Erstimpfungen prozentual zur Einwohnerzahl Stand {stand} (Länder gesamt {gesamt_proz})"
 )
 
 # Zeitlicher Verlauf der Impfungen
-fig = make_subplots(specs=[[{"secondary_y":True}]])
+fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
     go.Scatter(x=rki_zr[:-1].Datum,
                y=rki_zr[:-1]['Gesamt_kum'],
@@ -155,6 +154,15 @@ app.layout = \
                     )
                 ],
                 className="wrapper"
+            ),
+            html.Div(
+                html.P(
+                    children=[
+                        html.Span("Stand 26.01.2021 "),
+                        html.A("Quellcode hier", href="https://github.com/haddo42/Impfstand")
+                    ]
+                ),
+                className="div-source"
             )
         ]
     )
