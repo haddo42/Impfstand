@@ -89,8 +89,10 @@ fig_tag = go.Figure(
                # yaxis="y2",
                ),
     ])
+bund_erst_tag = f'{bund.iloc[0][2]:,}'.replace(',', '.')
+bund_zweit_tag = f'{bund.iloc[0][5]:,}'.replace(',', '.')
 fig_tag.update_layout(
-    title_text="Impfungen am Berichtstag",
+    title_text=f"Impfungen am Berichtstag (Länder gesamt {bund_erst_tag} bzw. {bund_zweit_tag})",
     yaxis=dict(title='Impfungen'),
     legend=dict(orientation='h', yanchor='bottom', y=1.0),
     # yaxis2=dict(title='Impfungen Tag', overlaying='y', side='right'),
@@ -109,10 +111,13 @@ fig_kum = go.Figure(
                offsetgroup=2,
                ),
         ])
+bund_erst_kum = f'{bund.iloc[0][1]:,}'.replace(',', '.')
+bund_zweit_kum = f'{bund.iloc[0][4]:,}'.replace(',', '.')
 fig_kum.update_layout(
-    title_text="Impfungen bis einschließlich Berichtstag",
+    title_text=f"Impfungen bis einschließlich Berichtstag (Länder gesamt {bund_erst_kum} bzw. {bund_zweit_kum})",
     yaxis=dict(title='Impfungen'),
     legend=dict(orientation='h', yanchor='bottom', y=1.0),
+    # yaxis2=dict(title='Impfungen Tag', overlaying='y', side='right'),
 )
 
 # Impfungen Bevölkerung in % sortiert
