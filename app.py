@@ -79,12 +79,14 @@ fig_tag = go.Figure(
         go.Bar(name="Erstimpfungen",
                x=rki.index,
                y=rki["Differenz_zum_Vortag"],
+               marker_color="steelblue",
                offsetgroup=1,
                # yaxis="y",
                ),
         go.Bar(name="Zweitimpfungen",
                x=rki.index,
                y=rki["Zweit_Differenz_zum_Vortag"],
+               marker_color="tomato",
                offsetgroup=2,
                # yaxis="y2",
                ),
@@ -103,11 +105,13 @@ fig_kum = go.Figure(
         go.Bar(name="Erstimpfungen",
                x=rki.index,
                y=rki["Erst_Impfungen_kum"],
+               marker_color="steelblue",
                offsetgroup=1,
                ),
         go.Bar(name="Zweitimpfungen",
                x=rki.index,
                y=rki['Zweit_Impfungen_kum'],
+               marker_color="tomato",
                offsetgroup=2,
                ),
         ])
@@ -122,17 +126,19 @@ fig_kum.update_layout(
 
 # Impfungen Bevölkerung in % sortiert
 fig_proz = go.Figure(
-    data =[
+    data=[
         go.Bar(
             name="Erstimpfungen",
             x=rki_sort.index,
             y=[f'{i:.2f}' for i in rki_sort['Impfquote_%']],
+            marker_color="steelblue",
             offsetgroup=1,
         ),
         go.Bar(
             name='Zweitimpfungen',
             x=rki_sort.index,
             y=[f'{i:.2f}' for i in rki_sort['Zweitquote_%']],
+            marker_color="tomato",
             offsetgroup=2,
         ),
     ])
@@ -146,28 +152,50 @@ fig_proz.update_layout(
 # Zeitlicher Verlauf der Impfungen
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
-    go.Scatter(x=rki_zr[:-1].Datum,
-               y=rki_zr[:-1]['Gesamt_kum'],
-               mode="lines+markers",
-               name="Erst- und Zweitimpfung kumulativ"),
+    go.Scatter(
+        name="Erst- und Zweitimpfung kumulativ",
+        x=rki_zr[:-1].Datum,
+        y=rki_zr[:-1]['Gesamt_kum'],
+        mode="lines+markers",
+        marker_color="black",
+        ),
     secondary_y=True)
 fig.add_trace(
-    go.Scatter(x=rki_zr[:-1].Datum,
-               y=rki_zr[:-1]['Gesamt'],
-               name="Erst- und Zweitimpfung"),
+    go.Bar(
+        name="Erstimpfung",
+        x=rki_zr[:-1].Datum,
+        y=rki_zr[:-1]['Erstimpfung'],
+        marker_color="steelblue",
+        offsetgroup=1),
     secondary_y=False)
 fig.add_trace(
-    go.Scatter(x=rki_zr[:-1].Datum,
-               y=rki_zr[:-1]['Erstimpfung'],
-               name="Erstimpfung"),
+    go.Bar(
+        name="Zweitimpfung",
+        x=rki_zr[:-1].Datum,
+        y=rki_zr[:-1]['Zweitimpfung'],
+        marker_color="tomato",
+        offsetgroup=1),
     secondary_y=False)
 fig.add_trace(
-    go.Scatter(x=rki_zr[:-1].Datum,
-               y=rki_zr[:-1]['Zweitimpfung'],
-               name="Zweitimpfung"),
+    go.Scatter(
+        name="Erst- und Zweitimpfung",
+        x=rki_zr[:-1].Datum,
+        y=rki_zr[:-1]['Erstimpfung'] + rki_zr[:-1]['Zweitimpfung'],
+        mode="markers",
+        marker=dict(
+            color="red",
+            size=10,
+            symbol="triangle-down",
+            line=dict(
+                width=1,
+                color="black",
+                )
+            )
+        ),
     secondary_y=False)
 fig.update_layout(
     title_text="Zeitlicher Verlauf der Impfungen (Länder gesamt)",
+    barmode="stack",
     legend=dict(yanchor="top", y=0.99,
                 xanchor="left", x=0.01)
     )
