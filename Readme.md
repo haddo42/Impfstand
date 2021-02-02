@@ -1,4 +1,4 @@
-# Ploty-Dash-Applikation
+# Plotly-Dash-Applikation
 Die Applikation zeigt den täglichen Stand der Covid-19 Impfkampagne für Deutschland 
 und seine Bundesländern. Die Daten hierfür stammen vom Rober-Koch-Instituts, das 
 [hier](https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.xlsx;jsessionid=0FAB8623D95E5DF62147A144E1D768D9.internet081?__blob=publicationFile) 
