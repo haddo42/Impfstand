@@ -16,7 +16,7 @@ import requests
 menschen = [
     ["Baden-Württemberg", 11100394, 9338713, 1761681, 15.9],
     ["Bayern", 13124737, 11344979, 1779758, 13.6],
-    ["Berlin",  3669491, 2963425, 706066, 19.2],
+    ["Berlin", 3669491, 2963425, 706066, 19.2],
     ["Brandenburg", 2521893, 2397020, 124873, 5.0],
     ["Bremen", 681202, 555005, 126197, 18.5],
     ["Hamburg", 1847253, 1541632, 305621, 16.5],
@@ -74,80 +74,161 @@ rki_zr['Gesamt_kum'] = kum
 
 """ die Grafiken definieren
 """
-fig_tag = go.Figure(
-    data=[
-        go.Bar(name="Erstimpfungen",
-               x=rki.index,
-               y=rki["Differenz_zum_Vortag"],
-               marker_color="steelblue",
-               offsetgroup=1,
-               # yaxis="y",
-               ),
-        go.Bar(name="Zweitimpfungen",
-               x=rki.index,
-               y=rki["Zweit_Differenz_zum_Vortag"],
-               marker_color="tomato",
-               offsetgroup=2,
-               # yaxis="y2",
-               ),
-    ])
+
+# Impfungen
+fig_impfungen = go.Figure()
+fig_impfungen.add_trace(
+    go.Bar(
+        name="1.Impf./Tag",
+        marker=dict(color="steelblue"),
+        width=.3,
+        offset=-0.3,
+        x=rki.index,
+        y=rki["Differenz_zum_Vortag"],
+        legendgroup="group1",
+    )
+)
+fig_impfungen.add_trace(
+    go.Bar(
+        name="2.Impf./Tag",
+        marker=dict(color="orange"),
+        width=.3,
+        offset=-0.3,
+        x=rki.index,
+        y=rki["Zweit_Differenz_zum_Vortag"],
+        legendgroup="group1",
+    )
+)
+fig_impfungen.add_trace(
+    go.Bar(
+        name="1.Impf./kum.",
+        marker=dict(color="blue"),
+        width=.3,
+        offset=0.05,
+        x=rki.index,
+        y=rki["Erst_Impfungen_kum"],
+        yaxis="y2",
+        legendgroup="group2",
+    )
+)
+fig_impfungen.add_trace(
+    go.Bar(
+        name="2.Impf./kum.",
+        marker=dict(color="tomato"),
+        width=.3,
+        offset=0.05,
+        x=rki.index,
+        y=rki["Zweit_Impfungen_kum"],
+        yaxis="y2",
+        legendgroup="group2",
+    )
+)
+fig_impfungen.update_layout(
+    title_text=f"Impfungen Stand Berichtstag",
+    yaxis=dict(title='Impfungen Tag'),
+    barmode="stack",
+    legend=dict(orientation='h', yanchor='bottom', y=1.0),
+    yaxis2=dict(title='Impfungen kum.', overlaying='y', side='right'),
+)
+
+# Tabelle Impfungen Bund
 bund_erst_tag = f'{bund.iloc[0][2]:,}'.replace(',', '.')
 bund_zweit_tag = f'{bund.iloc[0][5]:,}'.replace(',', '.')
-fig_tag.update_layout(
-    title_text=f"Impfungen am Berichtstag (Länder gesamt {bund_erst_tag} bzw. {bund_zweit_tag})",
-    yaxis=dict(title='Impfungen'),
-    legend=dict(orientation='h', yanchor='bottom', y=1.0),
-    # yaxis2=dict(title='Impfungen Tag', overlaying='y', side='right'),
-)
-
-fig_kum = go.Figure(
-    data=[
-        go.Bar(name="Erstimpfungen",
-               x=rki.index,
-               y=rki["Erst_Impfungen_kum"],
-               marker_color="steelblue",
-               offsetgroup=1,
-               ),
-        go.Bar(name="Zweitimpfungen",
-               x=rki.index,
-               y=rki['Zweit_Impfungen_kum'],
-               marker_color="tomato",
-               offsetgroup=2,
-               ),
-        ])
 bund_erst_kum = f'{bund.iloc[0][1]:,}'.replace(',', '.')
 bund_zweit_kum = f'{bund.iloc[0][4]:,}'.replace(',', '.')
-fig_kum.update_layout(
-    title_text=f"Impfungen bis einschließlich Berichtstag (Länder gesamt {bund_erst_kum} bzw. {bund_zweit_kum})",
-    yaxis=dict(title='Impfungen'),
+
+
+def impf_table():
+    return \
+        html.Div(
+            html.Table(
+                children=[
+                    html.Tr(
+                        children=[
+                            html.Th('Länder gesamt'),
+                            html.Th('Tag'),
+                            html.Th('kumulativ'),
+                        ],
+                    ),
+                    html.Tr(
+                        children=[
+                            html.Td('Erstimpfung'),
+                            html.Td(bund_erst_tag),
+                            html.Td(bund_erst_kum),
+                        ],
+                    ),
+                    html.Tr(
+                        children=[
+                            html.Td('Zweitimpfung'),
+                            html.Td(bund_zweit_tag),
+                            html.Td(bund_zweit_kum),
+                        ],
+                    ),
+                ],
+                className="tbl-impfungen",
+            ),
+        )
+
+
+# Impfquoten in %
+fig_proz = go.Figure()
+fig_proz.add_trace(
+    go.Bar(
+        name="Erstimpfungen",
+        x=rki_sort.index,
+        y=rki_sort['Impfquote_%'],
+        width=0.3,
+        offset=-0.3,
+        marker=dict(color="steelblue"),
+        offsetgroup=1,
+    )
+)
+fig_proz.add_trace(
+    go.Bar(
+        name='Zweitimpfungen',
+        x=rki_sort.index,
+        y=rki_sort['Zweitquote_%'],
+        width=0.3,
+        offset=0.05,
+        marker=dict(color="orange"),
+        offsetgroup=2,
+    ),
+)
+fig_proz.update_layout(
+    title_text=f"Impfquoten Stand Berichtstag",
     legend=dict(orientation='h', yanchor='bottom', y=1.0),
-    # yaxis2=dict(title='Impfungen Tag', overlaying='y', side='right'),
+    yaxis=dict(title="Quote in %")
 )
 
-# Impfungen Bevölkerung in % sortiert
-fig_proz = go.Figure(
-    data=[
-        go.Bar(
-            name="Erstimpfungen",
-            x=rki_sort.index,
-            y=[f'{i:.2f}' for i in rki_sort['Impfquote_%']],
-            marker_color="steelblue",
-            offsetgroup=1,
-        ),
-        go.Bar(
-            name='Zweitimpfungen',
-            x=rki_sort.index,
-            y=[f'{i:.2f}' for i in rki_sort['Zweitquote_%']],
-            marker_color="tomato",
-            offsetgroup=2,
-        ),
-    ])
+# Tabelle Impfquoten Bund
 gesamt_erst_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
 gesamt_zweit_proz = f'{bund.iloc[0][8]:.2f} %'.replace('.', ',')
-fig_proz.update_layout(
-    title_text=f"Impfquoten am Berichtstag (Länder gesamt {gesamt_erst_proz} bzw. {gesamt_zweit_proz})",
-    legend=dict(orientation='h', yanchor='bottom', y=1.0),
-)
+
+
+def quoten_table():
+    return \
+        html.Div(
+            html.Table(
+                children=[
+                    html.Tr(
+                        children=[
+                            html.Th(''),
+                            html.Th('Erstimpfung'),
+                            html.Th('Zweitimpfung'),
+                        ],
+                    ),
+                    html.Tr(
+                        children=[
+                            html.Td('Länder gesamt'),
+                            html.Td(gesamt_erst_proz),
+                            html.Td(gesamt_zweit_proz),
+                        ]
+                    )
+                ],
+                className="tbl-impfungen",
+            ),
+        )
+
 
 # Zeitlicher Verlauf der Impfungen
 fig = make_subplots(specs=[[{"secondary_y": True}]])
@@ -157,15 +238,15 @@ fig.add_trace(
         x=rki_zr[:-1].Datum,
         y=rki_zr[:-1]['Gesamt_kum'],
         mode="lines+markers",
-        marker_color="black",
-        ),
+        marker=dict(color="black"),
+    ),
     secondary_y=True)
 fig.add_trace(
     go.Bar(
         name="Erstimpfung",
         x=rki_zr[:-1].Datum,
         y=rki_zr[:-1]['Erstimpfung'],
-        marker_color="steelblue",
+        marker=dict(color="steelblue"),
         offsetgroup=1),
     secondary_y=False)
 fig.add_trace(
@@ -173,7 +254,7 @@ fig.add_trace(
         name="Zweitimpfung",
         x=rki_zr[:-1].Datum,
         y=rki_zr[:-1]['Zweitimpfung'],
-        marker_color="tomato",
+        marker=dict(color="orange"),
         offsetgroup=1),
     secondary_y=False)
 fig.add_trace(
@@ -189,16 +270,16 @@ fig.add_trace(
             line=dict(
                 width=1,
                 color="black",
-                )
             )
-        ),
+        )
+    ),
     secondary_y=False)
 fig.update_layout(
     title_text="Zeitlicher Verlauf der Impfungen (Länder gesamt)",
     barmode="stack",
     legend=dict(yanchor="top", y=0.99,
                 xanchor="left", x=0.01)
-    )
+)
 
 """ die App anlegen und gestalten
 """
@@ -225,16 +306,18 @@ app.layout = \
             html.Div(
                 children=[
                     html.Div(
-                        dcc.Graph(figure=fig_tag),
+                        children=[
+                            dcc.Graph(figure=fig_impfungen),
+                            impf_table(),
+                        ],
                         className="card"
                     ),
                     html.Div(
-                        dcc.Graph(figure=fig_kum),
-                        className="card"
-                    ),
-                    html.Div(
-                        dcc.Graph(figure=fig_proz),
-                        className="card"
+                        children=[
+                            dcc.Graph(figure=fig_proz),
+                            quoten_table(),
+                        ],
+                        className="card",
                     ),
                     html.Div(
                         dcc.Graph(figure=fig),
@@ -246,7 +329,7 @@ app.layout = \
             html.Div(
                 html.P(
                     children=[
-                        html.Span("Stand 28.01.2021 "),
+                        html.Span("Stand 02.02.2021 "),
                         html.A("Quellcode hier", href="https://github.com/haddo42/Impfstand")
                     ]
                 ),
