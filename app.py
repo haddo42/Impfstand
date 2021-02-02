@@ -1,5 +1,4 @@
 import re
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -8,70 +7,38 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import requests
 
-""" Bevölkerungsdaten 
-    Quelle https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/
-           Bevoelkerung/Bevoelkerungsstand/Tabellen/bevoelkerung-nichtdeutsch-laender.html
+""" RKI-Daten Impfquotenmonitoring.xlsx
 """
-# Menschen in D. am 31.12.2019
-menschen = [
-    ["Baden-Württemberg", 11100394, 9338713, 1761681, 15.9],
-    ["Bayern", 13124737, 11344979, 1779758, 13.6],
-    ["Berlin", 3669491, 2963425, 706066, 19.2],
-    ["Brandenburg", 2521893, 2397020, 124873, 5.0],
-    ["Bremen", 681202, 555005, 126197, 18.5],
-    ["Hamburg", 1847253, 1541632, 305621, 16.5],
-    ["Hessen", 6288080, 5244990, 1043090, 16.6],
-    ["Mecklenburg-Vorpommern", 1608138, 1533331, 74807, 4.7],
-    ["Niedersachsen", 7993608, 7220393, 773215, 9.7],
-    ["Nordrhein-Westfalen", 17947221, 15502665, 2444556, 13.6],
-    ["Rheinland-Pfalz", 4093903, 3623676, 470227, 11.5],
-    ["Saarland", 986887, 873967, 112920, 11.4],
-    ["Sachsen", 4071971, 3863937, 208034, 5.1],
-    ["Sachsen-Anhalt", 2194782, 2083117, 111665, 5.1],
-    ["Schleswig-Holstein", 2903773, 2659604, 244169, 8.4],
-    ["Thüringen", 2133378, 2022235, 111143, 5.2],
-    ["Gesamt", 83166711, 72768689, 10398022, 12.5]
-]
-people = pd.DataFrame(menschen)
-people.columns = ["Bundesland", "Gesamt", "Deutsche", "nichtDeutsche", "nD%"]
-
-""" RKI-Daten holen
-"""
-url = 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/'
-url += 'Daten/Impfquotenmonitoring.xlsx;'
-url += 'jsessionid=0FAB8623D95E5DF62147A144E1D768D9.internet081?__blob=publicationFile'
-
+url = 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/' \
+      'Daten/Impfquotenmonitoring.xlsx;' \
+      'jsessionid=0FAB8623D95E5DF62147A144E1D768D9.internet081?__blob=publicationFile'
 datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
-stand = tag[0][:6] + '20' + tag[0][6:]
-
-rki_raw = pd.read_excel(requests.get(url).content, 1)[2:]  # das 2. Arbeitsblatt, ab 3. Zeile
-rki_raw = rki_raw.iloc[list(range(17)), [1, 3, 6, 7, 8, 9]]
+stand = tag[0][:6]+'20'+tag[0][6:]
+rki_raw = pd.read_excel(requests.get(url).content, 1)[2:]
+rki_raw = rki_raw.iloc[list(range(17)), [1, 2, 3, 6, 7, 8, 11, 12]]
 rki_raw.index = list(range(17))
-rki_raw.columns = ['Bundesland', 'Erst_Impfungen_kum', 'Differenz_zum_Vortag',
-                   'Impfquote_%', 'Zweit_Impfungen_kum', 'Zweit_Differenz_zum_Vortag']
+rki_raw.columns = ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum', 'Erst_Impf_Tag',
+                   'Erst_Impf_Quote', 'Zweit_Impf_kum', 'Zweit_Impf_Tag', 'Zweit_Impf_Quote']
+rki_raw['Gesamt_Impf_kum'] = rki_raw['Gesamt_Impf_kum'].astype(int)
 rki = rki_raw
-rki['Gesamt'] = rki_raw['Erst_Impfungen_kum'] + rki_raw['Zweit_Impfungen_kum']
-rki['Menschen'] = people['Gesamt']
-rki['Zweitquote_%'] = rki['Zweit_Impfungen_kum'] / rki['Menschen'] * 100
 bund = rki[-1:]
 rki = rki.set_index('Bundesland')[:16]
-rki_sort = rki.sort_values("Impfquote_%", ascending=False)
+rki_sort = rki.sort_values("Erst_Impf_Quote", ascending=False)
 
-# Zeitreihe Impfungen vom Arbeitsblatt Nr. 4 "Impfungen_proTag"
-rki_zr = pd.read_excel(requests.get(url).content, 3)
-rki_zr.drop(rki_zr[-2:-1].index, inplace=True)
-rki_zr.columns = ['Datum', 'Erstimpfung', 'Zweitimpfung', 'Gesamt']
-rki_zr = rki_zr[(rki_zr.Gesamt != 0)]
-# kumulative Werte errechnen
-kum = []
-s = 0
-for i in rki_zr[:-1].Gesamt:
-    s += i
-    kum.append(s)
-kum.append(s)
-rki_zr['Gesamt_kum'] = kum
+""" RKI-Daten Zeitreihen
+"""
+url = "https://impfdashboard.de/static/data/germany_vaccinations_timeseries_v2.tsv"
+rki_raw = pd.read_csv(url, sep="\t")
+rki_zr = rki_raw[['date', 'dosen_kumulativ', 'dosen_differenz_zum_vortag',
+                  'dosen_erst_differenz_zum_vortag', 'dosen_zweit_differenz_zum_vortag',
+                  'personen_erst_kumulativ', 'personen_voll_kumulativ']]
 
+rki_zr.columns = ['Datum', 'Gesamt_kum', 'Gesamt_tag', 'Erst_Impf_Tag',
+                  'Zweit_Impf_Tag', 'Erst_Impf_kum', 'Voll_Impf_kum']
+
+""" die Grafiken definieren
+"""
 """ die Grafiken definieren
 """
 
@@ -84,7 +51,7 @@ fig_impfungen.add_trace(
         width=.3,
         offset=-0.3,
         x=rki.index,
-        y=rki["Differenz_zum_Vortag"],
+        y=rki["Erst_Impf_Tag"],
         legendgroup="group1",
     )
 )
@@ -95,7 +62,7 @@ fig_impfungen.add_trace(
         width=.3,
         offset=-0.3,
         x=rki.index,
-        y=rki["Zweit_Differenz_zum_Vortag"],
+        y=rki["Zweit_Impf_Tag"],
         legendgroup="group1",
     )
 )
@@ -106,7 +73,7 @@ fig_impfungen.add_trace(
         width=.3,
         offset=0.05,
         x=rki.index,
-        y=rki["Erst_Impfungen_kum"],
+        y=rki["Erst_Impf_kum"],
         yaxis="y2",
         legendgroup="group2",
     )
@@ -118,7 +85,7 @@ fig_impfungen.add_trace(
         width=.3,
         offset=0.05,
         x=rki.index,
-        y=rki["Zweit_Impfungen_kum"],
+        y=rki["Zweit_Impf_kum"],
         yaxis="y2",
         legendgroup="group2",
     )
@@ -132,10 +99,10 @@ fig_impfungen.update_layout(
 )
 
 # Tabelle Impfungen Bund
-bund_erst_tag = f'{bund.iloc[0][2]:,}'.replace(',', '.')
-bund_zweit_tag = f'{bund.iloc[0][5]:,}'.replace(',', '.')
-bund_erst_kum = f'{bund.iloc[0][1]:,}'.replace(',', '.')
-bund_zweit_kum = f'{bund.iloc[0][4]:,}'.replace(',', '.')
+bund_erst_tag = f'{bund.iloc[0][3]:,}'.replace(',', '.')
+bund_zweit_tag = f'{bund.iloc[0][6]:,}'.replace(',', '.')
+bund_erst_kum = f'{bund.iloc[0][2]:,}'.replace(',', '.')
+bund_zweit_kum = f'{bund.iloc[0][5]:,}'.replace(',', '.')
 
 
 def impf_table():
@@ -176,7 +143,7 @@ fig_proz.add_trace(
     go.Bar(
         name="Erstimpfungen",
         x=rki_sort.index,
-        y=rki_sort['Impfquote_%'],
+        y=rki_sort['Erst_Impf_Quote'],
         width=0.3,
         offset=-0.3,
         marker=dict(color="steelblue"),
@@ -187,7 +154,7 @@ fig_proz.add_trace(
     go.Bar(
         name='Zweitimpfungen',
         x=rki_sort.index,
-        y=rki_sort['Zweitquote_%'],
+        y=rki_sort['Zweit_Impf_Quote'],
         width=0.3,
         offset=0.05,
         marker=dict(color="orange"),
@@ -201,8 +168,8 @@ fig_proz.update_layout(
 )
 
 # Tabelle Impfquoten Bund
-gesamt_erst_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
-gesamt_zweit_proz = f'{bund.iloc[0][8]:.2f} %'.replace('.', ',')
+gesamt_erst_proz = f'{bund.iloc[0][4]:.2f} %'.replace('.', ',')
+gesamt_zweit_proz = f'{bund.iloc[0][7]:.2f} %'.replace('.', ',')
 
 
 def quoten_table():
@@ -235,49 +202,32 @@ fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
     go.Scatter(
         name="Erst- und Zweitimpfung kumulativ",
-        x=rki_zr[:-1].Datum,
-        y=rki_zr[:-1]['Gesamt_kum'],
+        x=rki_zr.Datum,
+        y=rki_zr['Gesamt_kum'],
         mode="lines+markers",
-        marker=dict(color="black"),
     ),
     secondary_y=True)
 fig.add_trace(
-    go.Bar(
-        name="Erstimpfung",
-        x=rki_zr[:-1].Datum,
-        y=rki_zr[:-1]['Erstimpfung'],
-        marker=dict(color="steelblue"),
-        offsetgroup=1),
-    secondary_y=False)
-fig.add_trace(
-    go.Bar(
-        name="Zweitimpfung",
-        x=rki_zr[:-1].Datum,
-        y=rki_zr[:-1]['Zweitimpfung'],
-        marker=dict(color="orange"),
-        offsetgroup=1),
-    secondary_y=False)
+    go.Scatter(
+        name="Erstimpfung kumulativ",
+        x=rki_zr.Datum,
+        y=rki_zr['Erst_Impf_kum'],
+        mode='lines+markers',
+    ),
+    secondary_y=True)
 fig.add_trace(
     go.Scatter(
-        name="Erst- und Zweitimpfung",
-        x=rki_zr[:-1].Datum,
-        y=rki_zr[:-1]['Erstimpfung'] + rki_zr[:-1]['Zweitimpfung'],
-        mode="markers",
-        marker=dict(
-            color="red",
-            size=10,
-            symbol="triangle-down",
-            line=dict(
-                width=1,
-                color="black",
-            )
-        )
+        name="Zweit-(Voll-)impfung kumulativ",
+        x=rki_zr.Datum,
+        y=rki_zr['Voll_Impf_kum'],
+        mode='lines+markers',
+        fill='tozeroy',
     ),
-    secondary_y=False)
+    secondary_y=True)
 fig.update_layout(
     title_text="Zeitlicher Verlauf der Impfungen (Länder gesamt)",
     barmode="stack",
-    legend=dict(yanchor="top", y=0.99,
+    legend=dict(yanchor="top", y=.98,
                 xanchor="left", x=0.01)
 )
 
@@ -298,7 +248,7 @@ app.layout = \
             html.Div(
                 children=[
                     html.Span(
-                        children='Datenquelle: RKI "Impfquotenmonitoring.xlsx"'),
+                        children='Datenquelle: Robert-Koch-Institut'),
                     html.P()
                 ],
                 className="header-datasource"
@@ -329,7 +279,7 @@ app.layout = \
             html.Div(
                 html.P(
                     children=[
-                        html.Span("Stand 02.02.2021 "),
+                        html.Span("Stand 07.02.2021 "),
                         html.A("Quellcode hier", href="https://github.com/haddo42/Impfstand")
                     ]
                 ),
@@ -337,6 +287,7 @@ app.layout = \
             )
         ]
     )
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
