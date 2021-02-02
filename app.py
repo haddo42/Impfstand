@@ -203,7 +203,6 @@ fig_proz.update_layout(
 # Tabelle Impfquoten Bund
 gesamt_erst_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
 gesamt_zweit_proz = f'{bund.iloc[0][8]:.2f} %'.replace('.', ',')
-what = 'Hi'
 
 
 def quoten_table():
