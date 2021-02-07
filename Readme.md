@@ -1,10 +1,10 @@
 # Plotly-Dash-Applikation
 Die Applikation zeigt den täglichen Stand der Covid-19 Impfkampagne für Deutschland 
-und seine Bundesländern. Die Daten hierfür stammen vom Rober-Koch-Instituts, das 
+und seine Bundesländer. Die Daten hierfür stammen vom Rober-Koch-Instituts, das 
 [hier](https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.xlsx;jsessionid=0FAB8623D95E5DF62147A144E1D768D9.internet081?__blob=publicationFile) 
 eine werktäglich um ca. 13:00 Uhr aktualisierte Excel-Datei bereitstellt. 
 Das Programm liest diese Daten direkt in ein Pandas-Dataframe ein und stellt sie in 
-Plotly-Grafiken in der Dash-Anwendung bereit. Mit Hilfe dieses [Beispiels](https://medium.com/@austinlasseter/how-to-deploy-a-simple-plotly-dash-app-to-heroku-622a2216eb73) 
+Plotly-Grafiken in der Dash-Anwendung bereit. Mithilfe dieses [Beispiels](https://medium.com/@austinlasseter/how-to-deploy-a-simple-plotly-dash-app-to-heroku-622a2216eb73) 
 gelingen die ersten Schritte.
 
 Auf [**HEROKU**](https://www.heroku.com) ist der Test einer Plotly-Dash-Applikation 
