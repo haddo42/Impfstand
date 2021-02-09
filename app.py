@@ -16,7 +16,7 @@ datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
 stand = tag[0][:6]+'20'+tag[0][6:]
 rki_raw = pd.read_excel(requests.get(url).content, 1)[2:]
-rki_raw = rki_raw.iloc[list(range(17)), [1, 2, 3, 6, 7, 8, 11, 12]]
+rki_raw = rki_raw.iloc[list(range(17)), [1, 2, 3, 7, 8, 9, 12, 13]]
 rki_raw.index = list(range(17))
 rki_raw.columns = ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum', 'Erst_Impf_Tag',
                    'Erst_Impf_Quote', 'Zweit_Impf_kum', 'Zweit_Impf_Tag', 'Zweit_Impf_Quote']
