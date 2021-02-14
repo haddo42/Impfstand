@@ -39,8 +39,6 @@ rki_zr.columns = ['Datum', 'Gesamt_kum', 'Gesamt_tag', 'Erst_Impf_Tag',
 
 """ die Grafiken definieren
 """
-""" die Grafiken definieren
-"""
 
 # Impfungen
 fig_impfungen = go.Figure()
