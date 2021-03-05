@@ -16,12 +16,12 @@ datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
 stand = tag[0][:6]+'20'+tag[0][6:]
 rki_raw = pd.read_excel(requests.get(url).content, 1)[2:]
-rki_raw = rki_raw.iloc[list(range(17)), [1, 2, 3, 7, 8, 9, 12, 13]]
-rki_raw.index = list(range(17))
-rki_raw.columns = ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum', 'Erst_Impf_Tag',
-                   'Erst_Impf_Quote', 'Zweit_Impf_kum', 'Zweit_Impf_Tag', 'Zweit_Impf_Quote']
-rki_raw['Gesamt_Impf_kum'] = rki_raw['Gesamt_Impf_kum'].astype(int)
-rki = rki_raw
+rki_raw = rki_raw.iloc[list(range(18)), [1, 2, 3, 7, 8, 9, 12, 13]]
+rki_raw.index = list(range(18))
+rki_cols = ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum', 'Erst_Impf_Tag',
+            'Erst_Impf_Quote', 'Zweit_Impf_kum', 'Zweit_Impf_Tag', 'Zweit_Impf_Quote']
+rki_raw.columns = rki_cols
+rki = rki_raw[rki_raw.index != 16]
 bund = rki[-1:]
 rki = rki.set_index('Bundesland')[:16]
 rki_sort = rki.sort_values("Erst_Impf_Quote", ascending=False)
