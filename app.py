@@ -110,7 +110,7 @@ def impf_table():
                 children=[
                     html.Tr(
                         children=[
-                            html.Th('Länder gesamt'),
+                            html.Th('Bundesländer gesamt'),
                             html.Th('Tag'),
                             html.Th('kumulativ'),
                         ],
@@ -184,7 +184,7 @@ def quoten_table():
                     ),
                     html.Tr(
                         children=[
-                            html.Td('Länder gesamt'),
+                            html.Td('Bundesländer gesamt'),
                             html.Td(gesamt_erst_proz),
                             html.Td(gesamt_zweit_proz),
                         ]
@@ -223,7 +223,7 @@ fig.add_trace(
     ),
     secondary_y=True)
 fig.update_layout(
-    title_text="Zeitlicher Verlauf der Impfungen (Länder gesamt)",
+    title_text="Zeitlicher Verlauf der Impfungen (Bundesländer gesamt)",
     barmode="stack",
     legend=dict(yanchor="top", y=.98,
                 xanchor="left", x=0.01)
