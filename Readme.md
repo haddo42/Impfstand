@@ -18,4 +18,4 @@ erreichbar und zeigten an, dass der Pythonmodul **`xlrd`** nicht gefunden wurde.
 In der lokalen Lösung spielt der Modul explizit keine Rolle. Offenbar wird er 
 aber von `Pandas` beim Laden eines Dataframes mit einer aus dem Web direkt 
 übernommenen Datei vom Typ `xlsx` benötigt. Nach seiner Aufnahme in 
-`requirements.txt` lief die App dann wie erwartet ([siehe hier](https://impfstand.herokuapp.com)).
+`requirements.txt` lief die App dann wie erwartet.
