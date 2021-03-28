@@ -202,7 +202,7 @@ fig.add_trace(
         name="Erst- und Zweitimpfung kumulativ",
         x=rki_zr.Datum,
         y=rki_zr['Gesamt_kum'],
-        mode="lines+markers",
+        mode="lines",
     ),
     secondary_y=True)
 fig.add_trace(
@@ -210,7 +210,7 @@ fig.add_trace(
         name="Erstimpfung kumulativ",
         x=rki_zr.Datum,
         y=rki_zr['Erst_Impf_kum'],
-        mode='lines+markers',
+        mode='lines',
     ),
     secondary_y=True)
 fig.add_trace(
@@ -218,7 +218,7 @@ fig.add_trace(
         name="Zweit-(Voll-)impfung kumulativ",
         x=rki_zr.Datum,
         y=rki_zr['Voll_Impf_kum'],
-        mode='lines+markers',
+        mode='lines',
         fill='tozeroy',
     ),
     secondary_y=True)
