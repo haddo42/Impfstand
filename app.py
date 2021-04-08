@@ -28,8 +28,7 @@ def menschen(bundesland):
             "Sachsen-Anhalt": 2194782,
             "Schleswig-Holstein": 2903773,
             "Thüringen": 2133378,
-            "Bund": 83166711
-           }
+            "Bund": 83166711}
     what = bundesland
     if what == 'Gesamt': what = 'Bund'
     return bund[what]
