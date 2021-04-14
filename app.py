@@ -305,7 +305,7 @@ app.layout = \
             html.Div(
                 html.P(
                     children=[
-                        html.Span("Stand 07.02.2021 "),
+                        html.Span("Stand 14.04.2021 "),
                         html.A("Quellcode hier", href="https://github.com/haddo42/Impfstand")
                     ]
                 ),
