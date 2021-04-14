@@ -2,8 +2,10 @@
 Die Applikation zeigt den täglichen Stand der Covid-19 Impfkampagne für Deutschland 
 und seine Bundesländer. Die Daten hierfür stammen vom Rober-Koch-Instituts, das 
 [hier](https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.xlsx;jsessionid=0FAB8623D95E5DF62147A144E1D768D9.internet081?__blob=publicationFile) 
-eine werktäglich um ca. 13:00 Uhr aktualisierte Excel-Datei bereitstellt. 
-Das Programm liest diese Daten direkt in ein Pandas-Dataframe ein und stellt sie in 
+eine werktäglich um ca. 13:00 Uhr aktualisierte Excel-Datei bereitstellt. Die Zeitreihe der Impfungen 
+stammt ebenfalls vom [RKI](https://impfdashboard.de/static/data/germany_vaccinations_timeseries_v2.tsv).
+ 
+Das Programm liest diese Daten online in Pandas-Dataframes ein und stellt sie in 
 Plotly-Grafiken in der Dash-Anwendung bereit. Mithilfe dieses [Beispiels](https://medium.com/@austinlasseter/how-to-deploy-a-simple-plotly-dash-app-to-heroku-622a2216eb73) 
 gelingen die ersten Schritte.
 
