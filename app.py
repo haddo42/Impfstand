@@ -10,30 +10,6 @@ import requests
 """ Bevölkerungsdaten
 """
 
-
-def menschen(bundesland):
-    bund = {"Baden-Württemberg": 11100394,
-            "Bayern": 13124737,
-            "Berlin": 3669491,
-            "Brandenburg": 2521893,
-            "Bremen": 681202,
-            "Hamburg": 1847253,
-            "Hessen": 6288080,
-            "Mecklenburg-Vorpommern": 1608138,
-            "Niedersachsen": 7993608,
-            "Nordrhein-Westfalen": 17947221,
-            "Rheinland-Pfalz": 4093903,
-            "Saarland": 986887,
-            "Sachsen": 4071971,
-            "Sachsen-Anhalt": 2194782,
-            "Schleswig-Holstein": 2903773,
-            "Thüringen": 2133378,
-            "Bund": 83166711}
-    what = bundesland
-    if what == 'Gesamt': what = 'Bund'
-    return bund[what]
-
-
 """ RKI-Daten Impfquotenmonitoring.xlsx
 """
 url = 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/' \
@@ -42,33 +18,31 @@ url = 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/' \
 datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
 stand = tag[0][:6]+'20'+tag[0][6:]
-rki_raw = pd.read_excel(requests.get(url).content, 2)[3:21]
 
-rki = rki_raw.iloc[list(range(18)), [1, 2, 6, 7, 11, 12, 16, 17, 21]]
-rki.index = list(range(18))
-rki = rki.drop(index=16)
-rki.columns = ['Bundesland', 'IZ_Erst_Impf_kum',  'IZ_Erst_Impf_Tag',
-                             'IZ_Zweit_Impf_kum', 'IZ_Zweit_Impf_Tag',
-                             'NA_Erst_Impf_kum',  'NA_Erst_Impf_Tag',
-                             'NA_Zweit_Impf_kum', 'NA_Zweit_Impf_Tag',]
+rki_raw1 = pd.read_excel(requests.get(url).content, 1)[3:21]
+rki_raw1 = rki_raw1.iloc[list(range(18)), [1, 2, 3, 4, 5, 8]]
+rki_raw1.index = list(range(18))
+rki_raw1 = rki_raw1.drop(index=16)
+rki_raw1.columns = \
+    ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum',
+     'Zweit_Impf_kum', 'Erst_Impf_Quote', 'Zweit_Impf_Quote']
+
+rki_raw2 = pd.read_excel(requests.get(url).content, 2)[3:21]
+rki_raw2 = rki_raw2.iloc[list(range(18)), [1, 6, 11, 16, 21]]
+rki_raw2.index = list(range(18))
+rki_raw2 = rki_raw2.drop(index=16)
+rki_raw2.columns = \
+    ['Bundesland', 'IZ_Erst_Impf_Tag', 'IZ_Zweit_Impf_Tag',
+     'NA_Erst_Impf_Tag', 'NA_Zweit_Impf_Tag']
+rki_raw2['Erst_Impf_Tag'] = rki_raw2['IZ_Erst_Impf_Tag'] + \
+                            rki_raw2['NA_Erst_Impf_Tag']
+rki_raw2['Zweit_Impf_Tag'] = rki_raw2['IZ_Zweit_Impf_Tag'] + \
+                            rki_raw2['NA_Zweit_Impf_Tag']
+
+rki = rki_raw1
+rki['Erst_Impf_Tag'] = rki_raw2['Erst_Impf_Tag']
+rki['Zweit_Impf_Tag'] = rki_raw2['Zweit_Impf_Tag']
 rki = rki.set_index('Bundesland')
-
-rki['Erst_Impf_kum'] = rki['IZ_Erst_Impf_kum'] + rki['NA_Erst_Impf_kum']
-rki['Erst_Impf_Tag'] = rki['IZ_Erst_Impf_Tag'] + rki['NA_Erst_Impf_Tag']
-rki['Zweit_Impf_kum'] = rki['IZ_Zweit_Impf_kum'] + rki['NA_Zweit_Impf_kum']
-rki['Zweit_Impf_Tag'] = rki['IZ_Zweit_Impf_Tag'] + rki['NA_Zweit_Impf_Tag']
-rki['Gesamt_Impf_kum'] = rki['Erst_Impf_kum'] + rki['Zweit_Impf_kum']
-
-rki['Erst_Impf_Quote'] = \
-    [item*100/menschen(ind) for ind, item in zip(rki.index, rki['Erst_Impf_kum'])]
-rki['Zweit_Impf_Quote'] = \
-    [item*100/menschen(ind) for ind, item in zip(rki.index, rki['Zweit_Impf_kum'])]
-
-# Spaltenauswahl (wie vorher)
-# rki_cols = ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum', 'Erst_Impf_Tag',
-#             'Erst_Impf_Quote', 'Zweit_Impf_kum', 'Zweit_Impf_Tag', 'Zweit_Impf_Quote']
-rki = rki[['Gesamt_Impf_kum', 'Erst_Impf_kum', 'Erst_Impf_Tag',
-           'Erst_Impf_Quote', 'Zweit_Impf_kum', 'Zweit_Impf_Tag', 'Zweit_Impf_Quote']]
 
 bund = rki[-1:]
 rki = rki[:16]
@@ -145,10 +119,14 @@ fig_impfungen.update_layout(
 )
 
 # Tabelle Impfungen Bund
-bund_erst_tag = f'{bund.iloc[0][2]:,}'.replace(',', '.')
-bund_zweit_tag = f'{bund.iloc[0][5]:,}'.replace(',', '.')
-bund_erst_kum = f'{bund.iloc[0][1]:,}'.replace(',', '.')
-bund_zweit_kum = f'{bund.iloc[0][4]:,}'.replace(',', '.')
+bund_erst_kum = bund.loc['Gesamt']['Erst_Impf_kum']
+bund_erst_kum = f'{bund_erst_kum:,}'.replace(',', '.')
+bund_erst_tag = bund.loc['Gesamt']['Erst_Impf_Tag']
+bund_erst_tag = f'{bund_erst_tag:,}'.replace(',', '.')
+bund_zweit_kum = bund.loc['Gesamt']['Zweit_Impf_kum']
+bund_zweit_kum = f'{bund_zweit_kum:,}'.replace(',', '.')
+bund_zweit_tag = bund.loc['Gesamt']['Zweit_Impf_Tag']
+bund_zweit_tag = f'{bund_zweit_tag:,}'.replace(',', '.')
 
 
 def impf_table():
@@ -214,8 +192,10 @@ fig_proz.update_layout(
 )
 
 # Tabelle Impfquoten Bund
-gesamt_erst_proz = f'{bund.iloc[0][3]:.2f} %'.replace('.', ',')
-gesamt_zweit_proz = f'{bund.iloc[0][6]:.2f} %'.replace('.', ',')
+gesamt_erst_proz = bund.loc['Gesamt']['Erst_Impf_Quote']
+gesamt_erst_proz = f'{gesamt_erst_proz:.2f} %'.replace('.', ',')
+gesamt_zweit_proz = bund.loc['Gesamt']['Zweit_Impf_Quote']
+gesamt_zweit_proz = f'{gesamt_zweit_proz:.2f} %'.replace('.', ',')
 
 
 def quoten_table():
