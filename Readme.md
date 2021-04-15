@@ -14,7 +14,7 @@ im Web möglich. Das oben genannte Beispiel macht auch hier den Einstieg leicht.
 Schwierigkeiten gab es bei der Datei `requirements.txt`. Was gehört für eine 
 Applikation zwingend in die Datei hinein? Hinweise können den Logdateien auf HEROKU
 entnommen werden. Für das Beispiel waren diese mit
-- `heroku logs -a=impfstand --tail`
+- `heroku logs --tail --app impfstand`
 
 erreichbar und zeigten an, dass der Pythonmodul **`xlrd`** nicht gefunden wurde. 
 In der lokalen Lösung spielt der Modul explizit keine Rolle. Offenbar wird er 
