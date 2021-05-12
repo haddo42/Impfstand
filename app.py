@@ -28,7 +28,7 @@ rki_raw1.columns = \
      'Zweit_Impf_kum', 'Erst_Impf_Quote', 'Zweit_Impf_Quote']
 
 rki_raw2 = pd.read_excel(requests.get(url).content, 2)[3:21]
-rki_raw2 = rki_raw2.iloc[list(range(18)), [1, 6, 11, 16, 21]]
+rki_raw2 = rki_raw2.iloc[list(range(18)), [1, 6, 12, 17, 23]]
 rki_raw2.index = list(range(18))
 rki_raw2 = rki_raw2.drop(index=16)
 rki_raw2.columns = \
@@ -305,7 +305,7 @@ app.layout = \
             html.Div(
                 html.P(
                     children=[
-                        html.Span("Stand 14.04.2021 "),
+                        html.Span("Programmstand 14.04.2021 "),
                         html.A("Quellcode hier", href="https://github.com/haddo42/Impfstand")
                     ]
                 ),
