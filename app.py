@@ -19,25 +19,21 @@ datum = pd.read_excel(requests.get(url).content, 0)
 tag = re.search(r'\d\d\.\d\d\.\d\d', datum.iloc[1][0])
 stand = tag[0][:6]+'20'+tag[0][6:]
 
-rki_raw1 = pd.read_excel(requests.get(url).content, 1)[3:21]
-rki_raw1 = rki_raw1.iloc[list(range(18)), [1, 2, 3, 4, 5, 8]]
+# letzte Strukturänderung 11.06.2021
+rki_raw1 = pd.read_excel(requests.get(url).content, 1)[2:21]
+rki_raw1 = rki_raw1.iloc[list(range(18)), [1, 2, 3, 4, 5, 9]]
 rki_raw1.index = list(range(18))
 rki_raw1 = rki_raw1.drop(index=16)
 rki_raw1.columns = \
     ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum',
      'Zweit_Impf_kum', 'Erst_Impf_Quote', 'Zweit_Impf_Quote']
 
-rki_raw2 = pd.read_excel(requests.get(url).content, 2)[3:21]
-rki_raw2 = rki_raw2.iloc[list(range(18)), [1, 6, 12, 17, 23]]
+# letzte Strukturänderung 11.06.2021
+rki_raw2 = pd.read_excel(requests.get(url).content, 2)[2:21]
+rki_raw2 = rki_raw2.iloc[list(range(18)), [1, 7, 12]]
 rki_raw2.index = list(range(18))
 rki_raw2 = rki_raw2.drop(index=16)
-rki_raw2.columns = \
-    ['Bundesland', 'IZ_Erst_Impf_Tag', 'IZ_Zweit_Impf_Tag',
-     'NA_Erst_Impf_Tag', 'NA_Zweit_Impf_Tag']
-rki_raw2['Erst_Impf_Tag'] = rki_raw2['IZ_Erst_Impf_Tag'] + \
-                            rki_raw2['NA_Erst_Impf_Tag']
-rki_raw2['Zweit_Impf_Tag'] = rki_raw2['IZ_Zweit_Impf_Tag'] + \
-                            rki_raw2['NA_Zweit_Impf_Tag']
+rki_raw2.columns = ['Bundesland', 'Erst_Impf_Tag', 'Zweit_Impf_Tag']
 
 rki = rki_raw1
 rki['Erst_Impf_Tag'] = rki_raw2['Erst_Impf_Tag']
@@ -46,6 +42,7 @@ rki = rki.set_index('Bundesland')
 
 bund = rki[-1:]
 rki = rki[:16]
+
 rki_sort = rki.sort_values("Erst_Impf_Quote", ascending=False)
 
 """ RKI-Daten Zeitreihen
