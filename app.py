@@ -27,6 +27,9 @@ rki_raw1 = rki_raw1.drop(index=16)
 rki_raw1.columns = \
     ['Bundesland', 'Gesamt_Impf_kum', 'Erst_Impf_kum',
      'Zweit_Impf_kum', 'Erst_Impf_Quote', 'Zweit_Impf_Quote']
+rki_raw1.Gesamt_Impf_kum = rki_raw1.Gesamt_Impf_kum.astype(int)
+rki_raw1.Erst_Impf_kum = rki_raw1.Erst_Impf_kum.astype(int)
+rki_raw1.Zweit_Impf_kum = rki_raw1.Zweit_Impf_kum.astype(int)
 
 # letzte Strukturänderung 11.06.2021
 rki_raw2 = pd.read_excel(requests.get(url).content, 2)[2:21]
